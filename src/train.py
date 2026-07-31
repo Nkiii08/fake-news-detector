@@ -1,4 +1,8 @@
 from datasets import load_dataset
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, classification_report   
 
 print("Loading dataset...")
 
@@ -66,3 +70,45 @@ print(df[["content", "target"]].head())
 # Show the number of rows after cleaning
 print("\nRows after cleaning:")
 print(len(df))
+
+# Select the article text and labels
+X = df["content"]
+y = df["target"]
+
+#split the data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(
+    X, y,
+    test_size=0.2,
+    random_state=42,
+    stratify=y
+)
+
+#convert the article into numners
+vectorizer = TfidfVectorizer(
+    stop_words="english", 
+    max_features=5000
+    )
+
+X_train_tfidf = vectorizer.fit_transform(X_train)
+X_test_tfidf = vectorizer.transform(X_test)
+
+#create and train the model
+model = LogisticRegression(max_iter=1000)
+#train the model
+model.fit(X_train_tfidf, y_train)
+
+#make predictions on the test set
+preditions = model.predict(X_test_tfidf)
+
+#show the models results
+print("\nModel Accuracy:")
+print(accuracy_score(y_test, preditions))
+
+print("\nClassification Report:")
+print(
+    classification_report(
+        y_test,
+        preditions,
+        target_names=["FAKE", "REAL"]
+        )
+)
