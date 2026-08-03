@@ -1,3 +1,4 @@
+import joblib
 from datasets import load_dataset
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
@@ -112,3 +113,10 @@ print(
         target_names=["FAKE", "REAL"]
         )
 )
+
+
+joblib.dump(model, "models/fake_news_model.joblib")
+joblib.dump(vectorizer, "models/tfidf_vectorizer.joblib")
+
+print("\nModel and vectorizer saved successfully")
+
