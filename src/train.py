@@ -1,4 +1,5 @@
 import joblib
+import pandas as pd
 from datasets import load_dataset
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.linear_model import LogisticRegression
@@ -120,3 +121,9 @@ joblib.dump(vectorizer, "models/tfidf_vectorizer.joblib")
 
 print("\nModel and vectorizer saved successfully")
 
+
+predictions = model.predict(X_test_tfidf)
+
+#show how many test article were predicted as FAKE and REAL
+print("\nPrediction counts:")
+print(pd.Series(predictions).value_counts())
