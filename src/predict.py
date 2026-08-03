@@ -1,5 +1,4 @@
 import joblib
-import pandas as pd
 
 #load the saved model
 model = joblib.load("models/fake_news_model.joblib")
