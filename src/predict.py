@@ -1,54 +1,45 @@
 import joblib
 
-#load the saved model
+# Load the saved model
 model = joblib.load("models/fake_news_model.joblib")
 
-#load the saved tfidf vectorizer
+# Load the saved TF-IDF vectorizer
 vectorizer = joblib.load("models/tfidf_vectorizer.joblib")
 
-#Ask the user to enter a news arcticle
-news_text = input("Enter a news article: ")
 
-#convert the news article into numbers
-news_tfidf = vectorizer.transform([news_text])
+def predict_news(news_text):
+    """
+    Predict whether a news article is FAKE or REAL.
+    Returns the prediction and confidence scores.
+    """
 
-#make a prediction
-prediction = model.predict(news_tfidf)[0]
+    # Convert the article into TF-IDF numbers
+    news_tfidf = vectorizer.transform([news_text])
 
-# Get probabilities for FAKE and REAL
-probabilities = model.predict_proba(news_tfidf)[0]
+    # Make a prediction
+    prediction = model.predict(news_tfidf)[0]
 
-fake_probability = probabilities[0]
-real_probability = probabilities[1]
+    # Get prediction probabilities
+    probabilities = model.predict_proba(news_tfidf)[0]
 
-# Show the result
-if prediction == 0:
-    print("\nPrediction: FAKE")
-else:
-    print("\nPrediction: REAL")
+    return {
+        "prediction": prediction,
+        "label": "FAKE" if prediction == 0 else "REAL",
+        "fake_probability": probabilities[0],
+        "real_probability": probabilities[1],
+    }
 
-print(f"FAKE probability: {fake_probability:.2%}")
-print(f"REAL probability: {real_probability:.2%}")
 
-#convert the article into term frequency-inverse document frequency (TF-IDF) numbers
-news_tfidf = vectorizer.transform([news_text])
+# This only runs when predict.py is executed directly
+if __name__ == "__main__":
 
-#make a prediction
-prediction = model.predict(news_tfidf)[0]
+    # Ask the user to enter a news article
+    news_text = input("Enter a news article: ")
 
-#get the prediction probabilities for FAKE and REAL
-probabilities = model.predict_proba(news_tfidf)[0]
+    # Get the prediction
+    result = predict_news(news_text)
 
-#store the probabilities for FAKE and REAL
-fake_probability = probabilities[0]
-real_probability = probabilities[1]
-
-#show the prediction
-if prediction == 0:
-    print("\nPrediction: FAKE")
-else:
-    print("\nPrediction: REAL")
-
-#show the confidence for both classes
-print(f"FAKE probability: {fake_probability:.2%}")
-print(f"REAL probability: {real_probability:.2%}")
+    # Display the result
+    print(f"\nPrediction: {result['label']}")
+    print(f"FAKE probability: {result['fake_probability']:.2%}")
+    print(f"REAL probability: {result['real_probability']:.2%}")
