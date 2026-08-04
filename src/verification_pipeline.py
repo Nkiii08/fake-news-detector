@@ -100,6 +100,58 @@ def group_evidence(fact_checks, news_articles):
 
     return grouped_results
 
+def determine_verdict(grouped_evidence, minimum_confidence = 0.70):
+    # Determine the overall verdict based on the grouped evidence and a minimum confidence threshold.
+
+    # Keep only evidence with reasonable model confidence
+    strong_support = [
+        item
+        for item in grouped_evidence["supports"]
+        if item["confidence"] >= minimum_confidence
+    ]
+
+    strong_contradict = [
+        item
+        for item in grouped_evidence["contradicts"]
+        if item["confidence"] >= minimum_confidence
+    ]
+
+    support_count = len(strong_support)
+    contradicts_count = len(strong_contradict)
+
+    # Conflicting evidence should not produce a definite verdict
+    if support_count > 0 and contradicts_count > 0:
+        return {
+            "verdict": "INCONCLUSIVE",
+            "reason": (
+                "There is strong evidence both supporting and "
+                "contradicting the claim."
+            ),
+            "support_count": support_count,
+            "contradicts_count": contradicts_count,
+        }
+
+    # Require at least two strong supporting results to produce a verdict
+    if support_count >= 2:
+        return{
+            "verdict": "SUPPORTED",
+            "reason": (
+                "There is strong evidence supporting the claim."
+            ),
+            "support_count": support_count,
+            "contradicts_count": contradicts_count,
+        }
+
+    # Use unverified evidence when evidence is missing or weak
+    return{
+        "verdict": "UNVERIFIED",
+        "reason": (
+            "There is not enough strong evidence to verify the claim."
+        ),
+        "support_count": support_count,
+        "contradicts_count": contradicts_count,
+    }
+
 
 def verify_news(user_text):
     """
@@ -133,12 +185,19 @@ def verify_news(user_text):
         analyzed_news_articles,
     )
 
+    # Determine the overall verdict
+    verdict_result = determine_verdict(grouped_evidence)
+
     # Return everything together
     return {
-        "claim": claim,
-        "fact_checks": analyzed_fact_checks,
-        "news_articles": analyzed_news_articles,
-        "evidence": grouped_evidence,
+    "claim": claim,
+    "verdict": verdict_result["verdict"],
+    "reason": verdict_result["reason"],
+    "support_count": verdict_result["support_count"],
+    "contradiction_count": verdict_result["contradiction_count"],
+    "fact_checks": analyzed_fact_checks,
+    "news_articles": analyzed_news_articles,
+    "evidence": grouped_evidence,
     }
 
 
@@ -169,5 +228,15 @@ if __name__ == "__main__":
             len(result["evidence"]["neutral"]),
         )
 
+        print("\nOverall verdict:")
+        print(result["verdict"])
+
+        print("\nReason:")
+        print(result["reason"])
+
+        print("\nStrong evidence counts:")
+        print("Supports:", result["support_count"])
+        print("Contradicts:", result["contradiction_count"])
+        
     except (TypeError, ValueError, RuntimeError) as error:
         print(f"\nError: {error}")
