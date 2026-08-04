@@ -1,11 +1,10 @@
 import os
 
+import dotenv
 import requests
-from dotenv import load_dotenv
-
 
 # Load variables from the .env file
-load_dotenv()
+dotenv.load_dotenv()
 
 # Read the NewsAPI key
 NEWS_API_KEY = os.getenv("NEWS_API_KEY")
