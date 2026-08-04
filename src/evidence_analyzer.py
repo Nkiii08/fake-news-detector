@@ -1,6 +1,5 @@
 from transformers import pipeline
 
-
 # Load a model trained for natural-language inference
 nli_model = pipeline(
     "text-classification",
