@@ -4,3 +4,5 @@ datasets
 joblib
 streamlit
 python-dotenv
+transformers
+torch
