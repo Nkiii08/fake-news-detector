@@ -1,6 +1,6 @@
-import joblib
 import os
-import requests
+
+import joblib
 from dotenv import load_dotenv
 
 load_dotenv()

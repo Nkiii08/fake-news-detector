@@ -194,7 +194,7 @@ def verify_news(user_text):
     "verdict": verdict_result["verdict"],
     "reason": verdict_result["reason"],
     "support_count": verdict_result["support_count"],
-    "contradiction_count": verdict_result["contradiction_count"],
+    "contradicts_count": verdict_result["contradicts_count"],
     "fact_checks": analyzed_fact_checks,
     "news_articles": analyzed_news_articles,
     "evidence": grouped_evidence,
@@ -236,7 +236,7 @@ if __name__ == "__main__":
 
         print("\nStrong evidence counts:")
         print("Supports:", result["support_count"])
-        print("Contradicts:", result["contradiction_count"])
-        
+        print("Contradicts:", result["contradicts_count"])
+
     except (TypeError, ValueError, RuntimeError) as error:
         print(f"\nError: {error}")
